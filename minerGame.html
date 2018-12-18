@@ -1,0 +1,141 @@
+﻿<html>
+<head>
+<script src="./web3.min.js"></script>
+<script>
+window.onload=function(){
+    var Web3 = require("web3");
+    var guessBtn=document.getElementById("guessBtn");
+    var guessNum=document.getElementById("guessNum");
+    var processBox=document.getElementById("process");
+    var abi=JSON.parse('[{"constant": false, "inputs": [{"name": "x1", "type": "uint256"}, {"name": "y1", "type": "uint256"}, {"name": "x2", "type": "uint256"}, {"name": "y2", "type": "uint256"}, {"name": "x3", "type": "uint256"}, {"name": "y3", "type": "uint256"}], "name": "bury", "outputs": [], "payable": true, "stateMutability": "payable", "type": "function"}, {"constant": true, "inputs": [{"name": "roomNum", "type": "uint256"}], "name": "showRoom", "outputs": [{"name": "", "type": "uint256"}, {"name": "", "type": "address"}], "payable": false, "stateMutability": "view", "type": "function"}, {"constant": false, "inputs": [{"name": "roomNum", "type": "uint256"}], "name": "distributePrize", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function"}, {"constant": false, "inputs": [{"name": "roomNum", "type": "uint256"}, {"name": "x1", "type": "uint256"}, {"name": "y1", "type": "uint256"}, {"name": "x2", "type": "uint256"}, {"name": "y2", "type": "uint256"}, {"name": "x3", "type": "uint256"}, {"name": "y3", "type": "uint256"}], "name": "playGame", "outputs": [], "payable": true, "stateMutability": "payable", "type": "function"}, {"constant": true, "inputs": [], "name": "getRoomAmount", "outputs": [{"name": "", "type": "uint256"}], "payable": false, "stateMutability": "view", "type": "function"}, {"inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor"}]');
+    var address="0x0C6426ea292b026c7b9E3AF2DE3053F26D726C0B";
+    //getContractEvents();
+    //startWatchContractEvents();
+    listRoom();
+    async function getProvider(){
+        if (window.ethereum) {
+            window.web3 = new Web3(ethereum);
+            try {
+                // Request account access if needed
+                await ethereum.enable();
+                // Acccounts now exposed
+                //if(checkNumber) sendTransaction();
+                //else alert("輸入的數字不符規格，請重新輸入");
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        else if (window.web3) {
+            window.web3 = new Web3(web3.currentProvider);
+            //if(checkNumber) sendTransaction();
+            //else alert("輸入的數字不符規格，請重新輸入");
+        }
+        else {
+            console.log("Non-Ethereum browser detected. You should consider trying MetaMask!");
+        }
+    }
+
+    function listRoom(){
+        console.log("list room...");
+        var contract = web3.eth.contract(abi);
+        var contractInstance = contract.at(address);
+        var amount;
+        contractInstance.getRoomAmount( (error, data) => {
+            console.log(error, data);
+            amount=data;
+        });
+        for(var i=0;i<amount;i++){
+            console.log(showRoom(i));
+        }
+    }
+
+    function bury(){
+        console.log("send transaction...");
+        var txnObject = {
+            from: web3.eth.accounts[0],
+            gas: 3400000,
+            value: web3.toWei(0.05, "ether"),
+        };
+        var contract = web3.eth.contract(abi);
+        var contractInstance = contract.at(address);
+        contractInstance.bury.sendTransaction(1,1,2,2,3,3, txnObject,function(error, result){
+            if(error){
+                // error handle
+            } else {
+                // do something
+            }
+        });
+    }
+
+    function playGame(roomNum){
+        console.log("send transaction...");
+        var txnObject = {
+            from: web3.eth.accounts[0],
+            gas: 3400000,
+            value: web3.toWei(0.05, "ether"),
+        };
+        var contract = web3.eth.contract(abi);
+        var contractInstance = contract.at(address);
+        contractInstance.playGame.sendTransaction(1,1,1,2,2,3,3, txnObject,function(error, result){
+            if(error){
+                // error handle
+            } else {
+                // do something
+            }
+        });
+
+    }
+
+    createMapBtn.addEventListener("click",function(){
+        getProvider();
+        bury();
+    });
+
+    playGameBtn.addEventListener("click",function(){
+        getProvider();
+        //bury();
+        playGame(0);
+    });
+
+    function createContractEventInstance(){
+        var contract = web3.eth.contract(abi);
+        var contractInstance = contract.at(address);
+        var additionalFilterOptions = {
+            "fromBlock": "0",
+            "toBlock": "latest"
+        };
+        var indexedEventValues = null;
+        /*{
+            "newNum": "0x0000000000000000000000000000000000000000000000000000000000000005"
+        };*/
+        // contractInstance.EVENT_NAME, NumberSetEvent is EVENT_NAME
+        return contractInstance.submitGuessEvent(
+                indexedEventValues, additionalFilterOptions);
+    }
+    /* Watch contract log by contract event instance */
+    function startWatchContractEvents() {
+        var contractEvent = createContractEventInstance();
+        contractEvent.watch(function(error, result){
+            if(error){
+                console.log("Get event error:", error);
+            } else {
+                //console.log("watch event");
+                processBox.innerText+=result.args.guessNum+":"+result.args.a+"A"+result.args.b+"B\n";
+            }
+        });
+    }
+}
+</script>
+</head>
+<body>
+<input id="createMapBtn" type="button" value="新建地圖">
+<input id="playGameBtn" type="button" value="玩遊戲">
+<!--<div id="roomSpan">
+    <div class="room" v-for="item in rooms" :key="item.id">
+    <p v-html="item.data"></p>
+    <input type="button" value="玩遊戲">
+    </div>
+</div>-->
+
+</body>
+</html>
