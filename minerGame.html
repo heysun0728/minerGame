@@ -1,8 +1,9 @@
 ﻿<html>
+
 <head>
-<script src="./web3.min.js"></script>
-<script>
-window.onload=function(){
+    <script src="./web3.min.js"></script>
+    <script>
+        window.onload=function(){
     var Web3 = require("web3");
     var guessBtn=document.getElementById("guessBtn");
     var guessNum=document.getElementById("guessNum");
@@ -127,10 +128,11 @@ window.onload=function(){
 }
 </script>
 </head>
+
 <body>
-<input id="createMapBtn" type="button" value="新建地圖">
-<input id="playGameBtn" type="button" value="玩遊戲">
-<!--<div id="roomSpan">
+    <input id="createMapBtn" type="button" value="新建地圖">
+    <input id="playGameBtn" type="button" value="玩遊戲">
+    <!--<div id="roomSpan">
     <div class="room" v-for="item in rooms" :key="item.id">
     <p v-html="item.data"></p>
     <input type="button" value="玩遊戲">
@@ -138,4 +140,5 @@ window.onload=function(){
 </div>-->
 
 </body>
+
 </html>
