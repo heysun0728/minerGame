@@ -1,72 +1,107 @@
 <template>
-  <div class="game-room" id="gm">
-    <h1>{{ msg }}</h1>
-    <!-- <div @click="">start</div> -->
-    <table id="roomList">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>bets</th>
-          <th>comments</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for:="value in rooms" >
-          <td>{{ value.id }}</td>
-          <td>{{ value.bets }}</td>
-          <td>{{ value.comments }}</td>
-          <td>
-            <button @click="joinRoom(value.id)">join</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>or
-    <button>Create a Room</button>
+  <div id="game-room">
+    <div id="play-ground">
+      <div class="grid" v-for="grid in bombList" :key="grid.id" 
+      @click="hitGrid(grid)" 
+      :class="{ isSelected: grid.isSelected}">
+        {{ grid.id}}
+      </div>
+    </div>
+
+    <button @click="submitRequest()">Submit</button>
   </div>
 </template>
 
 <script>
+import Web3 from "web3";
+
 export default {
   name: "game-room",
-  props: {
-    msg: String
-  },
+  props: {},
   created: () => {
-    // fetch data from contract & store in value @ instant create
+    // fetch data from contract & //store in value @ instant create
+    //* check contract state (is first/second player) & store at data
+
   },
+  // computed: () => ({
+
+  // }),
   data: () => {
     return {
-      rooms: [],
-      value: {
-        // demo use, fetched data from contract
-        id: "1",
-        bets: "2",
-        comments: "sdsdsd"
-      }
+      bombList: [
+        {
+          id: "0",
+          isSelected: false,
+        },
+        {id: "1", isSelected: false},
+        {id: "2", isSelected: false},
+        {id: "3", isSelected: false},
+        {id: "4", isSelected: false},
+        {id: "5", isSelected: false},
+        {id: "6", isSelected: false},
+        {id: "7", isSelected: false},
+        {id: "8", isSelected: false},
+      ]
     };
   },
   methods: {
     // TODO: load room information when page loading
-    joinRoom: () => {
-      // turn to the playing page where user wanna join
+    // joinRoom() {}
+    hitGrid(grid){
+      // set as button by css or js
+      grid.isSelected = !grid.isSelected;
+      //? refact as computed
+    },
+    submitRequest(){
+      this.setProv();
+      //TODO: and send Txn
+    },
+    async setProv() {
+      // ? typeof web3 !== ‘undefined’   need to be check?
+      if (window.ethereum) {
+
+        // ? miss this one??? is this line correct the missing var(ethereum) issue?
+        const ethereum = window.ethereum;
+
+        window.web3 = new Web3(ethereum);
+        try {
+          // Request account access if needed
+          await ethereum.enable();
+          // Acccounts now exposed
+        } catch (error) {
+          console.log(error);
+        }
+      } else if (window.web3) {
+        window.web3 = new Web3(web3.currentProvider);
+      } else {
+        console.log(
+          "Non-Ethereum browser detected. You should consider trying MetaMask!"
+        );
+      }
     }
-    // showRoom: bet => {
-      // TODO: update data: room with same bet
-    // }
   }
 };
 </script>
 
 <style scoped>
 .game-room {
-  height: 80vh;
-  background-color: aqua;
+  height: 30vh;
 }
-#roomList {
+#play-ground {
+  display: flex;
+flex-wrap: wrap;
+  width: 242px;
+  /* width: 15em; */
   margin: auto;
-  border: 3px solid purple;
+  border: 1px solid rgb(219, 35, 35);
 }
-h1 {
-  margin: auto 20vh;
+.grid {
+  /* display: inline-block; */
+  width:  5em;
+  height: 5em;
+  border: 1px solid rgb(219, 35, 35);
+}
+.isSelected{
+  background-color: greenyellow;
 }
 </style>

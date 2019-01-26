@@ -16,8 +16,10 @@ export default {
     async setProv() {
       // ? typeof web3 !== ‘undefined’   need to be check?
       if (window.ethereum) {
-        // ? miss this one???
+
+        // ? miss this one??? is this line correct the missing var(ethereum) issue?
         const ethereum = window.ethereum;
+
         window.web3 = new Web3(ethereum);
         try {
           // Request account access if needed
